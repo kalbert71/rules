@@ -1,9 +1,3 @@
-;“;” “#” “//”为注释符号，去掉前面的符号，该行才会生效
-; 基于STICK RULES、神机规则、mini等项目的配置整理
-; “Sabrina的万事屋”博主自用规则模板，随缘更新。欢迎访问本人的小破站： https://merlinblog.xyz/
-; Orz-3 TG频道：t.me/Orzmini
-; 本次更新日期：2022/01/19
-
 [general]
 #QuanX会对server_check_url指定的网址进行相应测试，以确认节点的可用性
 server_check_url=http://cp.cloudflare.com/generate_204
