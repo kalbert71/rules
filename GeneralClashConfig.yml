@@ -98,10 +98,12 @@ dns:
     ipv6: false
     default-nameserver: [223.5.5.5, 119.29.29.29]
     enhanced-mode: fake-ip
-    fake-ip-range: 11.18.0.1/16
+    #fake-ip-range: 11.18.0.1/16
+    fake-ip-range: 198.18.0.1/16
     use-hosts: true
-    nameserver: ['https://doh.pub/dns-query','https://dns.alidns.com/dns-query', 'tls://1.12.12.12']
-    fallback: ['https://[2001:4860:4860::8844]/dns-query', 'https://[2606:4700:4700::1001]/dns-query', 'tls://8.8.4.4/', 'https://45.11.45.11/dns-query']
+    nameserver: ['https://doh.pub/dns-query','https://dns.alidns.com/dns-query']
+    fallback:  ['https://doh.dns.sb/dns-query', 'https://dns.cloudflare.com/dns-query', 'https://dns.twnic.tw/dns-query', 'tls://8.8.4.4:853']
+    fallback-filter: { geoip: true, ipcidr: [240.0.0.0/4, 0.0.0.0/32] }
 # 1. clash DNS 请求逻辑：
 #   (1) 当访问一个域名时， nameserver 与 fallback 列表内的所有服务器并发请求，得到域名对应的 IP 地址。
 #   (2) clash 将选取 nameserver 列表内，解析最快的结果。
