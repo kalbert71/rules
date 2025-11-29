@@ -1,0 +1,275 @@
+# 必读！！！
+# 注意规则在满足自己需求情况下，尽量做到精简，不要过度复杂，以免影响性能。
+# 跑裸核用户请自行去掉下方控制面板模块的注释。
+# 机场订阅
+proxy-providers:
+  Airport1:
+    url: "订阅填写这里"
+    type: http
+    interval: 86400
+    health-check:
+      enable: true
+      url: https://www.gstatic.com/generate_204
+      interval: 300
+    proxy: DIRECT1
+
+  Airport2:
+    url: "订阅填写这里"
+    type: http
+    interval: 86400
+    health-check:
+      enable: true
+      url: https://www.gstatic.com/generate_204
+      interval: 300
+    proxy: DIRECT1
+
+    
+# 节点信息
+proxies:
+  - {name: DIRECT1, type: direct}
+  - {name: REJECT1, type: reject}
+  
+# 全局配置 
+port: 7890
+socks-port: 7891
+redir-port: 7892
+mixed-port: 7893
+tproxy-port: 7894
+allow-lan: true
+bind-address: "*"
+ipv6: false
+unified-delay: true
+tcp-concurrent: true
+# interface-name: enp6s18
+log-level: warning
+find-process-mode: 'off'
+global-client-fingerprint: chrome
+keep-alive-idle: 600
+keep-alive-interval: 15
+profile:
+  store-selected: true
+  store-fake-ip: true
+
+# 为防止使用插件朋友遇到面板问题，我注释掉了此模块。
+# 跑裸核朋友自行删除注释即可，使用nikki仅内核的ui路径改为/etc/nikki/run/ui
+#external-controller: 0.0.0.0:9090
+#secret: ""
+#external-ui: "/etc/mihomo/ui"
+#external-ui-name: zashboard
+#external-ui-url: "https://github.com/Zephyruso/zashboard/archive/refs/heads/gh-pages.zip"
+
+# 嗅探
+sniffer:
+  enable: true
+  sniff:
+    HTTP:
+      ports: [80, 8080-8880]
+      override-destination: false
+    TLS:
+      ports: [443, 8443]
+    QUIC:
+      ports: [443, 8443]
+  skip-domain:
+    - "Mijia Cloud"
+    - "+.push.apple.com"
+
+# 入站  
+tun:
+  enable: true
+  # system/gvisor/mixed
+  stack: mixed
+  dns-hijack: ["any:53", "tcp://any:53"]
+  #使用nikki，混入全部不修改的情况，开启接口指定为nikki
+  #使用仅内核自行修改下面三项为true
+  #device: nikki
+  auto-route: false
+  auto-redirect: true
+  auto-detect-interface: false
+
+# DNS模块
+dns:
+  enable: true
+  listen: 0.0.0.0:1053
+  ipv6: false
+  respect-rules: true
+  enhanced-mode: fake-ip
+  fake-ip-range: 28.0.0.1/8
+  fake-ip-filter-mode: blacklist
+  fake-ip-filter:
+    - "*"
+    - "+.lan"
+    - "+.local"
+    - "rule-set:private_domain,cn_domain"
+    - "+.msftconnecttest.com"
+    - "+.msftncsi.com"
+    - "time.*.com"
+    - "+.market.xiaomi.com"
+  default-nameserver:
+    - 223.5.5.5
+  proxy-server-nameserver:
+    - 119.29.29.29
+  nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
+
+
+# linux.do 推荐设置   https://linux.do/t/topic/1061825
+# dns:
+#   enable: true     #开启dns配置
+
+#   #略过其他设置
+
+#   default-nameserver:      #基础DNS服务器，必须先有它才能使用域名类型的DNS配置，因此必须为IP，此处使用阿里云DNS
+#     - tls://223.5.5.5
+#     - tls://223.6.6.6
+#   nameserver:         #在访问的国外网站没有匹配到任何域名规则，最终走了MATCH兜底规则时使用的DNS，为了确保不发生DNS泄漏和DNS污染，必须使用国外DNS
+#     - https://cloudflare-dns.com/dns-query
+#     - https://dns.google/dns-query
+#   proxy-server-nameserver:         #解析代理节点时使用的DNS，为了使下面的respect-rules生效必须设置，最好设置为国内DNS，否则在代理的第一步就可能因为连接不上国外DNS而解析不出代理节点的IP，最终倒在起点
+#     - https://dns.alidns.com/dns-query
+#     - https://doh.pub/dns-query
+#   direct-nameserver:           #规则匹配到直连时使用的DNS，既然是可以直连的，当然要用国内DNS
+#     - https://dns.alidns.com/dns-query
+#     - https://doh.pub/dns-query
+#   respect-rules: true      #让连接DNS服务器时能够遵循规则，也就是通过代理节点连接到上面设置的国外DNS，因为直连可能连接不上
+
+
+
+ 
+# 出站策略，根据自己情况调整每个策略里分组排序，增删都可以，比如把美国自动放到第一个，比如删除香港故转，注意别漏掉表情逗号等。
+# 如果相应分组没有筛选到对应的国家，请根据自己节点名字调整筛选关键字。
+# 没有再使用锚点，是考虑很多新手修改难度，这样新手修改某个分组更容易些。
+proxy-groups:
+  - {name: 🚀 节点选择, type: select, proxies: [🚀 手动切换, 🚀 手动切换2, 🚀 手动切换3,🇸🇬 狮城节点, 🇭🇰 香港节点, 🇺🇲 美国节点, 🇨🇳 台湾节点, 🇯🇵 日本节点, 🇰🇷 韩国节点, 🌐 其他地区,  ♻️ 自动选择, DIRECT1]}
+  - {name: 🚀 手动切换, type: select, include-all: true, filter: "^[^:：]*$" }
+  - {name: 🚀 手动切换2, type: select, include-all: true, filter: "^[^:：]*$" }
+  - {name: 🚀 手动切换3, type: select, include-all: true, filter: "^[^:：]*$" }
+  - {name: 🐟 漏网之鱼, type: select, proxies: [ 🚀 手动切换, 🚀 手动切换2, 🚀 手动切换3, 🇸🇬 狮城节点, 🇭🇰 香港节点, 🇺🇲 美国节点, 🇨🇳 台湾节点, 🇯🇵 日本节点, 🇰🇷 韩国节点, 🌐 其他地区,♻️ 自动选择, DIRECT1]}
+  - {name: 📹 YouTube, type: select, proxies: [🚀 手动切换, 🚀 手动切换2, 🚀 手动切换3, 🇸🇬 狮城节点, 🇭🇰 香港节点, 🇺🇲 美国节点, 🇨🇳 台湾节点, 🇯🇵 日本节点, 🇰🇷 韩国节点, 🌐 其他地区,  ♻️ 自动选择, DIRECT1]}
+  - {name: 📲 Telegram, type: select, proxies: [🚀 手动切换, 🚀 手动切换2, 🚀 手动切换3, 🇸🇬 狮城节点, 🇭🇰 香港节点, 🇺🇲 美国节点, 🇨🇳 台湾节点, 🇯🇵 日本节点, 🇰🇷 韩国节点, 🌐 其他地区,  ♻️ 自动选择, DIRECT1]}
+  - {name: 💬 AI, type: select, proxies: [🚀 手动切换, 🚀 手动切换2,🚀 手动切换3,🌐 其他地区,DIRECT1]}
+  - {name: 📖 Scholar, type: select, proxies: [DIRECT1, 🚀 手动切换, 🚀 手动切换2, 🚀 手动切换3, 🇸🇬 狮城节点, 🇭🇰 香港节点, 🇺🇲 美国节点, 🇨🇳 台湾节点,🇯🇵 日本节点, 🇰🇷 韩国节点, 🌐 其他地区, ♻️ 自动选择]}
+  - {name: 📱 Twitter, type: select, proxies: [🚀 手动切换, 🚀 手动切换2, 🚀 手动切换3, 🇸🇬 狮城节点, 🇭🇰 香港节点, 🇺🇲 美国节点, 🇨🇳 台湾节点, 🇯🇵 日本节点, 🇰🇷 韩国节点, 🌐 其他地区, ♻️ 自动选择, DIRECT1]}
+  - {name: 📺 巴哈姆特, type: select, proxies: [ 🇨🇳 台湾节点, 🚀 手动切换, 🚀 手动切换2, 🚀 手动切换3, DIRECT1]}
+  - {name: 🎥 NETFLIX, type: select, proxies: [🚀 手动切换, 🚀 手动切换2, 🚀 手动切换3, 🇸🇬 狮城节点, 🇭🇰 香港节点, 🇺🇲 美国节点, 🇨🇳 台湾节点,🇯🇵 日本节点, 🇰🇷 韩国节点, 🌐 其他地区, ♻️ 自动选择, DIRECT1]}
+  - {name: 🌍 国外媒体, type: select, proxies: [🚀 手动切换, 🚀 手动切换2, 🚀 手动切换3, 🇸🇬 狮城节点, 🇭🇰 香港节点, 🇺🇲 美国节点, 🇨🇳 台湾节点,🇯🇵 日本节点, 🇰🇷 韩国节点, 🌐 其他地区,♻️ 自动选择, DIRECT1]}
+  - {name: 📺 哔哩哔哩, type: select, proxies: [🎯 全球直连, 🚀 手动切换, 🚀 手动切换2,🚀 手动切换3, 🇭🇰 香港节点, 🇨🇳 台湾节点,🌐 其他地区 ]}
+  - {name: 🎶 Spotify, type: select, proxies: [ 🚀 手动切换, 🚀 手动切换2, 🚀 手动切换3, 🇸🇬 狮城节点, 🇭🇰 香港节点, 🇺🇲 美国节点, 🇨🇳 台湾节点,🇯🇵 日本节点, 🇰🇷 韩国节点, 🌐 其他地区, ♻️ 自动选择, DIRECT1]}
+  #- {name: 🎵 TikTok, type: select, proxies: [ 🚀 手动切换, 🚀 手动切换2, 🚀 手动切换3,🇸🇬 狮城节点, 🇭🇰 香港节点, 🇺🇲 美国节点, 🇨🇳 台湾节点,🇯🇵 日本节点, 🇰🇷 韩国节点, 🌐 其他地区,♻️ 自动选择, DIRECT1]}
+  - {name: Ⓜ️ 微软云盘, type: select, proxies: [DIRECT1,🚀 手动切换, 🚀 手动切换2, 🚀 手动切换3, 🇸🇬 狮城节点, 🇭🇰 香港节点, 🇺🇲 美国节点, 🇨🇳 台湾节点,🇯🇵 日本节点, 🇰🇷 韩国节点, 🌐 其他地区, ♻️ 自动选择]}
+  - {name: Ⓜ️ 微软服务, type: select, proxies: [DIRECT1,🚀 手动切换, 🚀 手动切换2, 🚀 手动切换3, 🇸🇬 狮城节点, 🇭🇰 香港节点, 🇺🇲 美国节点, 🇨🇳 台湾节点,🇯🇵 日本节点, 🇰🇷 韩国节点, 🌐 其他地区, ♻️ 自动选择]}
+  - {name: 📢 谷歌服务, type: select, proxies: [🚀 手动切换, 🚀 手动切换2, 🚀 手动切换3, 🇸🇬 狮城节点, 🇭🇰 香港节点, 🇺🇲 美国节点, 🇨🇳 台湾节点,🇯🇵 日本节点, 🇰🇷 韩国节点, 🌐 其他地区, ♻️ 自动选择,DIRECT1]}
+  - {name: 🍎 苹果服务, type: select, proxies: [DIRECT1,🚀 手动切换, 🚀 手动切换2, 🚀 手动切换3, 🇸🇬 狮城节点, 🇭🇰 香港节点, 🇺🇲 美国节点, 🇨🇳 台湾节点,🇯🇵 日本节点, 🇰🇷 韩国节点, 🌐 其他地区,  ♻️ 自动选择]}
+  - {name: 🎮 游戏平台, type: select, proxies: [DIRECT1, 🚀 手动切换, 🚀 手动切换2, 🚀 手动切换3, 🇸🇬 狮城节点, 🇭🇰 香港节点, 🇺🇲 美国节点, 🇨🇳 台湾节点,🇯🇵 日本节点, 🇰🇷 韩国节点, 🌐 其他地区, ♻️ 自动选择]}
+  - {name: 🎯 全球直连, type: select, proxies: [DIRECT1,🚀 手动切换, 🚀 手动切换2,🚀 手动切换3,🌐 其他地区]}
+  - {name: 🌏 国内媒体, type: select, proxies: [DIRECT1, 🚀 手动切换, 🚀 手动切换2,🚀 手动切换3, 🇸🇬 狮城节点, 🇭🇰 香港节点, 🇺🇲 美国节点, 🇨🇳 台湾节点, 🇯🇵 日本节点, 🇰🇷 韩国节点, 🌐 其他地区, ♻️ 自动选择]}
+  - {name: 🌐 其他地区, type: select, include-all: true, filter: "^(?!.*(?i)(港|HK|Hong Kong|日本|川日|东京|大阪|泉日|埼玉|沪日|深日|[^-]日|JP|Japan|美|波特兰|达拉斯|俄勒冈|凤凰城|费利蒙|硅谷|拉斯维加斯|洛杉矶|圣何塞|圣克拉拉|西雅图|芝加哥|(?<![a-zA-Z])US(?![a-zA-Z])|United States|台|新北|彰化|TW|Taiwan|新加坡|坡|狮城|SG|Singapore|KR|Korea|KOR|首尔|韩|韓|:|：)).*$"}
+  - {name: 🇭🇰 香港节点, type: url-test, include-all: true, tolerance: 20, interval: 300, filter: "(?=.*(港|HK|(?i)Hong))^((?!(台|日|韩|新|深|美)).)*$"}
+  - {name: 🇸🇬 狮城节点, type: url-test, include-all: true, tolerance: 20, interval: 300, filter: "(?=.*(新加坡|坡|狮城|SG|Singapore))^((?!(港|台|韩|日|美)).)*$" }
+  - {name: 🇺🇲 美国节点, type: url-test, include-all: true, tolerance: 20, interval: 300, filter: "(?=.*(美|波特兰|达拉斯|俄勒冈|凤凰城|费利蒙|硅谷|拉斯维加斯|洛杉矶|圣何塞|圣克拉拉|西雅图|芝加哥|United States|US|(?i)States|America))^((?!(港|台|日|韩|新|(?i)AUS|(?i)RUS)).)*$"}
+  - {name: 🇨🇳 台湾节点, type: url-test, include-all: true, tolerance: 20, interval: 300, filter: "(?:台|新北|彰化|TW|(?i:taiwan))"}
+  - {name: 🇯🇵 日本节点, type: url-test, include-all: true, tolerance: 20, interval: 300, filter: "(?=.*(日|JP|(?i)Japan))^((?!(港|台|韩|新|美)).)*$" }
+  - {name: 🇰🇷 韩国节点, type: url-test, include-all: true, tolerance: 20, interval: 300, filter: "(?=.*(KR|Korea|KOR|首尔|韩|韓))^((?!(港|台|日|新|美)).)*$" }
+  - {name: ♻️ 自动选择, type: url-test, include-all: true, tolerance: 20, interval: 300, filter: "^[^：:]*$"}
+#  - {name: 🔯 故障转移, type: fallback, include-all: true, tolerance: 20, interval: 300}
+  - {name: 🛑 广告拦截, type: select, proxies: [REJECT1, DIRECT1]}
+  - {name: 🍃 应用净化, type: select, proxies: [REJECT1, DIRECT1]}
+
+
+# 规则匹配
+rules:
+  - RULE-SET,private_ip,DIRECT1,no-resolve
+  - RULE-SET,private_domain,DIRECT1
+  - DOMAIN-SUFFIX,qichiyu.com,🚀 节点选择  
+  - RULE-SET,LocalAreaNetwork,🎯 全球直连
+  - RULE-SET,UnBan,🎯 全球直连 
+  - RULE-SET,BanAD,🛑 广告拦截
+  - RULE-SET,BanProgramAD,🍃 应用净化
+  - RULE-SET,GoogleFCM,📢 谷歌服务
+  - RULE-SET,GoogleCN,🎯 全球直连 
+  - RULE-SET,SteamCN,🎯 全球直连 
+  # - RULE-SET,OpenAi,💬 AI
+  # - RULE-SET,Claude,💬 AI
+  - RULE-SET,ai,💬 AI
+  - RULE-SET,scholar,📖 Scholar
+  - RULE-SET,spotify,🎶 Spotify 
+  #- Rule-SET,tiktok,🎵 TikTok
+  - Rule-SET,twitter,📱 Twitter
+  - Rule-SET,onedrive,Ⓜ️ 微软云盘
+  - Rule-SET,Microsoft,Ⓜ️ 微软服务
+  - Rule-SET,Bing,Ⓜ️ 微软服务
+  - Rule-SET,Apple,🍎 苹果服务
+  - Rule-SET,telegram_domain,📲 Telegram
+  - Rule-SET,telegram_ip,📲 Telegram
+  - Rule-SET,Epic,🎮 游戏平台
+  - Rule-SET,Origin,🎮 游戏平台
+  - Rule-SET,Sony,🎮 游戏平台
+  - Rule-SET,Steam,🎮 游戏平台
+  - Rule-SET,Nintendo,🎮 游戏平台
+  - Rule-SET,YouTube,📹 YouTube
+  - Rule-SET,netflix_domain,🎥 NETFLIX
+  - Rule-SET,netflix_ip,🎥 NETFLIX
+  - Rule-SET,Bahamut,📺 巴哈姆特
+  - Rule-SET,BilibiliHMT,📺 哔哩哔哩
+  - Rule-SET,Bilibili,📺 哔哩哔哩
+  - Rule-SET,ChinaMedia,🌏 国内媒体
+  - Rule-SET,ProxyMedia,🌍 国外媒体
+  - Rule-SET,ProxyGFWlist,🚀 节点选择
+  - Rule-SET,ChinaDomain,🎯 全球直连
+  - Rule-SET,ChinaCompanyIp,🎯 全球直连
+  - Rule-SET,Download,🎯 全球直连
+  - RULE-SET,geolocation-!cn,🚀 节点选择 
+  - RULE-SET,cn_domain,DIRECT1
+  - RULE-SET,cn_ip,DIRECT1
+  - MATCH,🐟 漏网之鱼
+
+
+# 规则集
+## type：可选http/file/inline  behavior：可选domain/ipcidr/classical format：可选yaml/text/mrs
+rule-anchor:
+  ip: &ip {type: http, interval: 86400, behavior: ipcidr, format: mrs}
+  domain: &domain {type: http, interval: 86400, behavior: domain, format: mrs}
+  class: &class {type: http, interval: 86400, behavior: classical, format: text}
+rule-providers: 
+  private_ip: {<<: *ip, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/private.mrs"}
+  private_domain: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/private.mrs"}
+  LocalAreaNetwork: { <<: *class, url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/LocalAreaNetwork.list"}
+  UnBan: { <<: *class, url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/UnBan.list"}
+  BanAD: { <<: *class, url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/BanAD.list"}
+  BanProgramAD: { <<: *class, url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/BanProgramAD.list"}
+  GoogleFCM: { <<: *class, url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/GoogleFCM.list"}
+  GoogleCN: { <<: *class, url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/GoogleCN.list"}
+  SteamCN: { <<: *class, url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/SteamCN.list"}
+  # OpenAi: { <<: *class, url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/OpenAi.list"}
+  # Claude: { <<: *class, url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/Claude.list"}
+  ai: {  <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ai-!cn.mrs" }
+  scholar: { <<: *class, url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/Scholar.list"}
+  spotify: { <<: *class, url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/Spotify.list"}
+  tiktok: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/tiktok.mrs"}
+  twitter: { <<: *class, url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/Twitter.list"}
+  onedrive: { <<: *class, url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/OneDrive.list"}
+  Microsoft: { <<: *class, url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Microsoft.list"}
+  Bing: { <<: *class, url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Bing.list"}
+  Apple: { <<: *class, url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Apple.list"}
+  telegram_domain: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/telegram.mrs"}
+  telegram_ip: { <<: *ip, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/telegram.mrs"}
+  Epic: { <<: *class, url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/Epic.list"}
+  Origin: { <<: *class, url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/Origin.list"}
+  Sony: { <<: *class, url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/Sony.list"}
+  Steam: { <<: *class, url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/Steam.list"}
+  Nintendo: { <<: *class, url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/Nintendo.list"}
+  YouTube: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/youtube.mrs"}
+  netflix_domain: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/netflix.mrs"}
+  netflix_ip: { <<: *ip, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/netflix.mrs"}
+  Bahamut: { <<: *class, url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/Bahamut.list"}
+  BilibiliHMT: { <<: *class, url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/BilibiliHMT.list"}
+  Bilibili: { <<: *class, url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/Bilibili.list"}
+  ChinaMedia: { <<: *class, url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/ChinaMedia.list"}
+  ProxyMedia: { <<: *class, url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/ProxyMedia.list"}
+  ProxyGFWlist: { <<: *class, url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/ProxyGFWlist.list"}
+  ChinaDomain: { <<: *class, url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/ChinaDomain.list"}
+  ChinaCompanyIp: { <<: *class, url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/ChinaCompanyIp.list"}
+  Download: { <<: *class, url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Download.list"}
+  geolocation-!cn: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/geolocation-!cn.mrs"}
+  cn_domain: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/cn.mrs"}
+  cn_ip: { <<: *ip, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/cn.mrs"}
