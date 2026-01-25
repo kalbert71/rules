@@ -179,7 +179,7 @@ proxy-groups:
 # 规则匹配
 rules:
   - RULE-SET,private_ip,DIRECT1,no-resolve
-  - RULE-SET,private_domain,DIRECT1
+  - RULE-SET,private_domain,DIRECT1,no-resolve
   - DOMAIN-SUFFIX,qichiyu.com,🚀 节点选择  
   - RULE-SET,LocalAreaNetwork,🎯 全球直连
   - RULE-SET,UnBan,🎯 全球直连 
@@ -218,9 +218,9 @@ rules:
   - Rule-SET,ChinaDomain,🎯 全球直连
   - Rule-SET,ChinaCompanyIp,🎯 全球直连
   - Rule-SET,Download,🎯 全球直连
-  - RULE-SET,geolocation-!cn,🚀 节点选择 
-  - RULE-SET,cn_domain,DIRECT1
-  - RULE-SET,cn_ip,DIRECT1
+  - RULE-SET,geolocation-!cn,🚀 节点选择,no-resolve 
+  - RULE-SET,cn_domain,DIRECT1,no-resolve
+  - RULE-SET,cn_ip,DIRECT1,no-resolve
   - MATCH,🐟 漏网之鱼
 
 
@@ -273,3 +273,4 @@ rule-providers:
   geolocation-!cn: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/geolocation-!cn.mrs"}
   cn_domain: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/cn.mrs"}
   cn_ip: { <<: *ip, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/cn.mrs"}
+
