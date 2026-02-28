@@ -170,7 +170,7 @@ proxy-groups:
   - {name: 🇨🇳 台湾节点, type: url-test, include-all: true, tolerance: 20, interval: 300, filter: "(?:台|新北|彰化|TW|(?i:taiwan))"}
   - {name: 🇯🇵 日本节点, type: url-test, include-all: true, tolerance: 20, interval: 300, filter: "(?=.*(日|JP|(?i)Japan))^((?!(港|台|韩|新|美)).)*$" }
   - {name: 🇰🇷 韩国节点, type: url-test, include-all: true, tolerance: 20, interval: 300, filter: "(?=.*(KR|Korea|KOR|首尔|韩|韓))^((?!(港|台|日|新|美)).)*$" }
-  - {name: ♻️ 自动选择, type: url-test, include-all: true, tolerance: 20, interval: 300, filter: "^(?!.*(：|:|DIRECT)).*$"}
+  - {name: ♻️ 自动选择, type: url-test, include-all: true, tolerance: 20, interval: 300, filter: "^(?!.*(：|:|DIRECT1)).*$"}
 #  - {name: 🔯 故障转移, type: fallback, include-all: true, tolerance: 20, interval: 300}
   - {name: 🛑 广告拦截, type: select, proxies: [REJECT1, DIRECT1]}
   - {name: 🍃 应用净化, type: select, proxies: [REJECT1, DIRECT1]}
@@ -273,5 +273,6 @@ rule-providers:
   geolocation-!cn: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/geolocation-!cn.mrs"}
   cn_domain: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/cn.mrs"}
   cn_ip: { <<: *ip, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/cn.mrs"}
+
 
 
