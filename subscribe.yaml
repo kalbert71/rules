@@ -163,12 +163,12 @@ proxy-groups:
   - {name: 🎮 游戏平台, type: select, proxies: [DIRECT1, 🚀 手动切换, 🚀 手动切换2, 🚀 手动切换3, 🇸🇬 狮城节点, 🇭🇰 香港节点, 🇺🇲 美国节点, 🇨🇳 台湾节点,🇯🇵 日本节点, 🇰🇷 韩国节点, 🌐 其他地区, ♻️ 自动选择]}
   - {name: 🎯 全球直连, type: select, proxies: [DIRECT1,🚀 手动切换, 🚀 手动切换2,🚀 手动切换3,🌐 其他地区]}
   - {name: 🌏 国内媒体, type: select, proxies: [DIRECT1, 🚀 手动切换, 🚀 手动切换2,🚀 手动切换3, 🇸🇬 狮城节点, 🇭🇰 香港节点, 🇺🇲 美国节点, 🇨🇳 台湾节点, 🇯🇵 日本节点, 🇰🇷 韩国节点, 🌐 其他地区, ♻️ 自动选择]}
-  - {name: 🌐 其他地区, type: select, include-all: true, filter: "^(?!.*(?i)(港|HK|Hong Kong|日本|川日|东京|大阪|泉日|埼玉|沪日|深日|(?<!尼)日|JP|Japan|美|波特兰|达拉斯|俄勒冈|凤凰城|费利蒙|硅谷|拉斯维加斯|洛杉矶|圣何塞|圣克拉拉|西雅图|芝加哥|(?<![a-zA-Z])US(?![a-zA-Z])|United States|台|新北|彰化|TW|Taiwan|新加坡|坡|狮城|SG|Singapore|KR|Korea|KOR|首尔|韩|韓|:|：|ECT1)).*$"}
-  - {name: 🇭🇰 香港节点, type: url-test, include-all: true, tolerance: 20, interval: 300, filter: "(?i)^(?=.*(?:港|HK|Hong))(?!(?:.*(?:台|日|韩|新|深|美))).*$"}
+  - {name: 🌐 其他地区, type: select, include-all: true,filter: "^(?!.*(?i)(港|HK|Hong Kong|HongKong|日本|川日|东京|大阪|泉日|埼玉|沪日|深日|(?<!尼)日|JP|Japan|美|波特兰|达拉斯|俄勒冈|凤凰城|费利蒙|硅谷|拉斯维加斯|洛杉矶|圣何塞|圣克拉拉|西雅图|芝加哥|(?<![a-zA-Z])US(?![a-zA-Z])|United States|台|新北|彰化|TW|Taiwan|新加坡|坡|狮城|SG|Singapore|KR|Korea|KOR|首尔|韩|韓|:|：|ECT1)).*$"}
+  - {name: 🇭🇰 香港节点, type: url-test, include-all: true, tolerance: 20, interval: 300, filter: "(?i)^(?=.*(?:港|HK|Hong Kong|HongKong))(?!(?:.*(?:台|日|韩|新|深|美))).*$"}
   - {name: 🇸🇬 狮城节点, type: url-test, include-all: true, tolerance: 20, interval: 300, filter: "(?i)^(?=.*(?:新加坡|坡|狮城|SG|Singapore))(?!(?:.*(?:港|台|韩|日|美))).*$" }
-  - {name: 🇺🇲 美国节点, type: url-test, include-all: true, tolerance: 20, interval: 300, filter: "(?i)^(?=.*(?:美|波特兰|达拉斯|俄勒冈|凤凰城|费利蒙|硅谷|拉斯维加斯|洛杉矶|圣何塞|圣克拉拉|西雅图|芝加哥|United States|US|States|America))(?!(?:.*(?:港|台|日|韩|新|AUS|RUS))).*$"}
+  - {name: 🇺🇲 美国节点, type: url-test, include-all: true, tolerance: 20, interval: 300,filter: "(?i)^(?=.*(?:美|波特兰|达拉斯|俄勒冈|凤凰城|费利蒙|硅谷|拉斯维加斯|洛杉矶|圣何塞|圣克拉拉|西雅图|芝加哥|United States|US|America))(?!(?:.*(?:港|台|日|韩|新|AUS|RUS))).*$"}
   - {name: 🇨🇳 台湾节点, type: url-test, include-all: true, tolerance: 20, interval: 300, filter: "(?i)^(?=.*(?:台|新北|彰化|TW|taiwan))(?!(?:.*(?:港|日|韩|日|美))).*$"}
-  - {name: 🇯🇵 日本节点, type: url-test, include-all: true, tolerance: 20, interval: 300, filter: "(?i)^(?=.*(?:日本|JP|Japan))(?!(?:.*(?:尼日利亚|港|台|韩|新|美))).*$" }
+  - {name: 🇯🇵 日本节点, type: url-test, include-all: true, tolerance: 20, interval: 300, filter: "(?i)^(?=.*(?:日本|川日|东京|大阪|泉日|埼玉|沪日|深日|JP|Japan))(?!(?:.*(?:尼日利亚|港|台|韩|新|美))).*$" }
   - {name: 🇰🇷 韩国节点, type: url-test, include-all: true, tolerance: 20, interval: 300, filter: "(?i)^(?=.*(?:KR|Korea|KOR|首尔|韩|韓))(?!(?:.*(?:港|台|日|新|美))).*$" }
   - {name: ♻️ 自动选择, type: url-test, include-all: true, tolerance: 20, interval: 300, filter: "^(?!.*(：|:|ECT1)).*$" }
 #  - {name: 🔯 故障转移, type: fallback, include-all: true, tolerance: 20, interval: 300}
@@ -273,6 +273,7 @@ rule-providers:
   geolocation-!cn: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/geolocation-!cn.mrs"}
   cn_domain: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/cn.mrs"}
   cn_ip: { <<: *ip, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/cn.mrs"}
+
 
 
 
