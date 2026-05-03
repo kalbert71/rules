@@ -215,6 +215,7 @@ rules:
   - Rule-SET,ChinaMedia,🌏 国内媒体
   - Rule-SET,ProxyMedia,🌍 国外媒体
   - Rule-SET,ProxyGFWlist,🚀 节点选择
+  - Rule-SET,kindle,🚀 节点选择  
   - Rule-SET,ChinaDomain,🎯 全球直连
   - Rule-SET,ChinaCompanyIp,🎯 全球直连
   - Rule-SET,Download,🎯 全球直连
@@ -273,6 +274,7 @@ rule-providers:
   geolocation-!cn: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/geolocation-!cn.mrs"}
   cn_domain: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/cn.mrs"}
   cn_ip: { <<: *ip, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/cn.mrs"}
+  kindle: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/kindle.mrs"}
 
 
 
