@@ -30,19 +30,13 @@ proxies:
   - {name: REJECT1, type: reject}
   
 # 全局配置 
-port: 7890
-socks-port: 7891
-redir-port: 7892
-mixed-port: 7893
-tproxy-port: 7894
+mixed-port: 7890
 allow-lan: true
 bind-address: "*"
 ipv6: false
 unified-delay: true
 tcp-concurrent: true
-# interface-name: enp6s18
 log-level: warning
-find-process-mode: 'off'
 global-client-fingerprint: chrome
 keep-alive-idle: 600
 keep-alive-interval: 15
@@ -51,20 +45,19 @@ profile:
   store-fake-ip: true
 
 # 为防止使用插件朋友遇到面板问题，我注释掉了此模块。
-# 跑裸核朋友自行删除注释即可，使用nikki仅内核的ui路径改为/etc/nikki/run/ui
 #external-controller: 0.0.0.0:9090
 #secret: ""
-#external-ui: "/etc/mihomo/ui"
+#external-ui: ui
 #external-ui-name: zashboard
 #external-ui-url: "https://github.com/Zephyruso/zashboard/archive/refs/heads/gh-pages.zip"
 
-# 嗅探
+# 嗅探（fakeip下其实可以不用嗅探）
 sniffer:
   enable: true
   sniff:
     HTTP:
       ports: [80, 8080-8880]
-      override-destination: false
+      override-destination: true
     TLS:
       ports: [443, 8443]
     QUIC:
@@ -73,22 +66,23 @@ sniffer:
     - "Mijia Cloud"
     - "+.push.apple.com"
 
-# 入站  
+# 入站
 tun:
   enable: true
   # system/gvisor/mixed
   stack: mixed
   dns-hijack: ["any:53", "tcp://any:53"]
   #使用nikki，混入全部不修改的情况，开启接口指定为nikki
-  #使用仅内核自行修改下面三项为true
   #device: nikki
+  #使用仅内核自行修改下面三项为true
   auto-route: false
-  auto-redirect: true
+  auto-redirect: false
   auto-detect-interface: false
 
 # DNS模块
 dns:
   enable: true
+  cache-algorithm: arc
   listen: 0.0.0.0:1053
   ipv6: false
   respect-rules: true
@@ -96,21 +90,15 @@ dns:
   fake-ip-range: 28.0.0.1/8
   fake-ip-filter-mode: blacklist
   fake-ip-filter:
-    - "*"
-    - "+.lan"
-    - "+.local"
-    - "rule-set:private_domain,cn_domain"
-    - "+.msftconnecttest.com"
-    - "+.msftncsi.com"
-    - "time.*.com"
-    - "+.market.xiaomi.com"
+    - "rule-set:fakeipfilter_domain"
   default-nameserver:
-    - 223.5.5.5
+    - https://223.5.5.5/dns-query
   proxy-server-nameserver:
-    - 119.29.29.29
+    - https://dns.alidns.com/dns-query
+    - https://doh.pub/dns-query
   nameserver:
-    - 223.5.5.5
-    - 119.29.29.29
+    - https://dns.alidns.com/dns-query
+    - https://doh.pub/dns-query
 
 
 # linux.do 推荐设置   https://linux.do/t/topic/1061825
@@ -234,6 +222,7 @@ rule-anchor:
   domain: &domain {type: http, interval: 86400, behavior: domain, format: mrs}
   class: &class {type: http, interval: 86400, behavior: classical, format: text}
 rule-providers: 
+  fakeipfilter_domain: {<<: *domain, url: "https://raw.githubusercontent.com/wwqgtxx/clash-rules/release/fakeip-filter.mrs"}
   private_ip: {<<: *ip, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/private.mrs"}
   private_domain: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/private.mrs"}
   LocalAreaNetwork: { <<: *class, url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/LocalAreaNetwork.list"}
