@@ -157,7 +157,7 @@ proxy-groups:
   - {name: 🎮 游戏平台, type: select, proxies: *pz_d}
   - {name: 🎯 全球直连, type: select, proxies: [DIRECT, 🚀 手动切换, 🚀 手动切换2, 🚀 手动切换3, 🌐 其他地区]}
   - {name: 🌏 国内媒体, type: select, proxies: *pz_d}
-  - {name: 🌐 其他地区, type: select, use: *use_p, filter: "^(?!.*(?i)(港|HK|Hong Kong|HongKong|日本|川日|东京|大阪|泉日|埼玉|沪日|深日|(?<!尼)日|JP|Japan|美|波特兰|达拉斯|俄勒冈|凤凰城|费利蒙|硅谷|拉斯维加斯|洛杉矶|圣何塞|圣克拉拉|西雅图|芝加哥|(?<![a-zA-Z])US(?![a-zA-Z])|United States|台|新北|彰化|TW|Taiwan|新加坡|坡|狮城|SG|Singapore|KR|Korea|KOR|首尔|韩|韓|:|：)).*$"}
+  - {name: 🌐 其他地区, type: select, use: *use_p, filter: "^(?!.*(?i)(港|HK|Hong Kong|HongKong|日本|川日|东京|大阪|泉日|埼玉|沪日|深日|(?<!尼)日|JP|Japan|美|波特兰|达拉斯|俄勒冈|凤凰城|费利蒙|硅谷|拉斯维加斯|洛杉矶|圣何塞|圣克拉拉|西雅图|芝加哥|(?<![a-zA-Z])US(?![a-zA-Z])|United States|台|新北|彰化|TW|Taiwan|新加坡|坡|狮城|SG|Singapore|KR|Korea|KOR|首尔|韩|韓|:|：|失联|过滤)).*$"}
   - {name: 🇭🇰 香港节点, <<: *ut, filter: "(?i)^(?=.*(?:港|HK|Hong Kong|HongKong))(?!(?:.*(?:台|日|韩|新|美))).*$"}
   - {name: 🇸🇬 狮城节点, <<: *ut, filter: "(?i)^(?=.*(?:新加坡|坡|狮城|SG|Singapore))(?!(?:.*(?:港|台|日|韩|美))).*$"}
   - {name: 🇺🇲 美国节点, <<: *ut, filter: "(?i)^(?=.*(?:美|波特兰|达拉斯|俄勒冈|凤凰城|费利蒙|硅谷|拉斯维加斯|洛杉矶|圣何塞|圣克拉拉|西雅图|芝加哥|United States|US|America))(?!(?:.*(?:港|台|日|韩|新|AUS|RUS))).*$"}
