@@ -170,7 +170,7 @@ proxy-groups:
 
 
 # 规则匹配
-# 规则顺序原则：精确优先（私有→自定义→局域网→白名单→广告→AI→国内可达直连→各平台→GFW 兜底→地理兜底→国内兜底→MATCH）
+# 规则顺序原则：精确优先（私有→自定义→白名单→广告→AI→国内可达直连→各平台→GFW 兜底→地理兜底→国内兜底→MATCH）
 rules:
   - RULE-SET,private_domain,DIRECT
   - RULE-SET,private_ip,DIRECT,no-resolve
@@ -179,14 +179,14 @@ rules:
   - DOMAIN-SUFFIX,qichiyu.com,🚀 节点选择
   - DOMAIN-SUFFIX,010210.xyz,🚀 节点选择
 
-  - RULE-SET,LocalAreaNetwork,🎯 全球直连
-
   # dl.google.com 在 ACL4SSR UnBan 白名单（直连），但该域国内被 GFW 污染 → 前置强制走 📢 谷歌服务（2026-08-09 交叉审查）
   - DOMAIN,dl.google.com,📢 谷歌服务
   - RULE-SET,UnBan,🎯 全球直连
 
   - RULE-SET,BanAD,🛑 广告拦截
   - RULE-SET,BanProgramAD,🍃 应用净化
+  # category-ads-all 国际广告商补充（ACL4SSR 两集 77% 域为国内广告联盟，此集补 yandex/taboola/exoclick 等；2026-08-10 交叉比对）
+  - RULE-SET,ads-all,🛑 广告拦截
 
   #- RULE-SET,OpenAi,💬 AI
   #- RULE-SET,Claude,💬 AI
@@ -263,11 +263,11 @@ rule-providers:
   private_domain: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/private.mrs"}
   private_ip: { <<: *ip, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/private.mrs"}
 
-  # 广告
-  LocalAreaNetwork: { <<: *class, url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/LocalAreaNetwork.list"}
+  # 广告（ACL4SSR 国内广告联盟主力 + MetaCubeX category-ads-all 国际补充，2026-08-10 交叉比对）
   UnBan: { <<: *class, url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/UnBan.list"}
   BanAD: { <<: *class, url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/BanAD.list"}
   BanProgramAD: { <<: *class, url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/BanProgramAD.list"}
+  ads-all: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ads-all.mrs"}
 
   google_domain: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/google.mrs"}
   google_ip: { <<: *ip, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/google.mrs"}
