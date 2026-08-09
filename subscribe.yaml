@@ -189,7 +189,7 @@ rules:
   #- RULE-SET,Claude,💬 AI
   - RULE-SET,ai,💬 AI
 
-  - RULE-SET,GoogleCN,🎯 全球直连
+  - RULE-SET,GoogleCN,📢 谷歌服务
   - RULE-SET,SteamCN,🎯 全球直连
 
   - RULE-SET,google_domain,📢 谷歌服务
