@@ -172,7 +172,7 @@ proxy-groups:
 # 规则匹配
 # 规则顺序原则：精确优先（私有→自定义→局域网→白名单→广告→AI→国内可达直连→各平台→GFW 兜底→地理兜底→国内兜底→MATCH）
 rules:
-  - RULE-SET,private_domain,DIRECT,no-resolve
+  - RULE-SET,private_domain,DIRECT
   - RULE-SET,private_ip,DIRECT,no-resolve
 
   # 自定义强制走代理域名（按需增删）
@@ -180,6 +180,9 @@ rules:
   - DOMAIN-SUFFIX,010210.xyz,🚀 节点选择
 
   - RULE-SET,LocalAreaNetwork,🎯 全球直连
+
+  # dl.google.com 在 ACL4SSR UnBan 白名单（直连），但该域国内被 GFW 污染 → 前置强制走 📢 谷歌服务（2026-08-09 交叉审查）
+  - DOMAIN,dl.google.com,📢 谷歌服务
   - RULE-SET,UnBan,🎯 全球直连
 
   - RULE-SET,BanAD,🛑 广告拦截
@@ -192,8 +195,11 @@ rules:
   - RULE-SET,GoogleCN,📢 谷歌服务
   - RULE-SET,SteamCN,🎯 全球直连
 
+  # YouTube 前置 google 系之前（geosite google 收录 youtube 全家族，避免主域名被 📢 谷歌服务 接管；2026-08-09）
+  - RULE-SET,YouTube,📹 YouTube
+
   - RULE-SET,google_domain,📢 谷歌服务
-  - RULE-SET,google_ip,📢 谷歌服务
+  - RULE-SET,google_ip,📢 谷歌服务,no-resolve
 
   - RULE-SET,scholar,🚀 节点选择
 
@@ -211,10 +217,10 @@ rules:
 
   - RULE-SET,apple@cn,🎯 全球直连
   - RULE-SET,apple_domain,🍎 苹果服务
-  - RULE-SET,apple_ip,🍎 苹果服务
+  - RULE-SET,apple_ip,🍎 苹果服务,no-resolve
 
   - RULE-SET,telegram_domain,📲 Telegram
-  - RULE-SET,telegram_ip,📲 Telegram
+  - RULE-SET,telegram_ip,📲 Telegram,no-resolve
 
   - RULE-SET,SIMCardUK,💬 SIMCardUK
 
@@ -225,10 +231,8 @@ rules:
   - RULE-SET,Steam,🎮 游戏平台
   - RULE-SET,Nintendo,🎮 游戏平台
 
-  - RULE-SET,YouTube,📹 YouTube
-
   - RULE-SET,netflix_domain,🎥 NETFLIX
-  - RULE-SET,netflix_ip,🎥 NETFLIX
+  - RULE-SET,netflix_ip,🎥 NETFLIX,no-resolve
 
   - RULE-SET,Bahamut,📺 巴哈姆特
   - RULE-SET,biliintl,📺 哔哩哔哩
@@ -238,11 +242,11 @@ rules:
   - RULE-SET,kindle,🚀 节点选择
   - RULE-SET,Download,🎯 全球直连
 
-  - RULE-SET,geolocation-!cn,🚀 节点选择,no-resolve
+  - RULE-SET,geolocation-!cn,🚀 节点选择
 
-  - RULE-SET,tld-cn,DIRECT,no-resolve
-  - RULE-SET,cn_domain,DIRECT,no-resolve
-  - RULE-SET,cn_ip,DIRECT,no-resolve
+  - RULE-SET,tld-cn,DIRECT
+  - RULE-SET,cn_domain,DIRECT
+  - RULE-SET,cn_ip,DIRECT
   - MATCH,🐟 漏网之鱼
 
 
