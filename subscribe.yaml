@@ -202,6 +202,8 @@ rules:
   #- RULE-SET,tiktok,🎵 TikTok
   - RULE-SET,twitter,📱 Twitter
 
+  # GitHub（microsoft 集误收录 github 全家族，前置避免落入 Ⓜ️ 微软服务；2026-08-09）
+  - RULE-SET,github,🚀 节点选择
   - RULE-SET,microsoft@cn,🎯 全球直连
   - RULE-SET,onedrive,Ⓜ️ 微软云盘
   - RULE-SET,Microsoft,Ⓜ️ 微软服务
@@ -279,6 +281,7 @@ rule-providers:
   twitter: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/x.mrs"}
 
   # 国内可达（@cn）直连子集（2026-08-09 新增，社区实践：国内 CDN 直连优先，置于全量集规则前）
+  github: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/github.mrs"}
   microsoft@cn: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/microsoft@cn.mrs"}
   onedrive: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/onedrive.mrs"}
   Microsoft: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/microsoft.mrs"}
