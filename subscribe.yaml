@@ -7,7 +7,11 @@
 #    - 顶层自定义键（p/ut/pz 等）mihomo 忽略，仅用于存放锚点
 # 3. 裸核用户请自行去掉下方控制面板模块的注释
 # 机场订阅（为空的 url 由 subconverter 转换时填充，裸核直接运行会拉取失败）
-p: &p {type: http, interval: 86400, proxy: DIRECT, health-check: {enable: true, url: https://www.gstatic.com/generate_204, interval: 300, expected-status: 204}}
+# 健康检查/测速 URL（2026-08-18 确认：实测 212ms 最快）
+#   备选（按需替换）：
+#   - http://latency-test.skk.moe/endpoint（204 ✓ 社区常用，实测 364ms 较慢，个人站点单点维护）
+#   - https://www.gstatic.com/generate_204（现用默认，实测 220ms，http 版亦可）
+p: &p {type: http, interval: 86400, proxy: DIRECT, health-check: {enable: true, url: http://cp.cloudflare.com/generate_204, interval: 300, expected-status: 204}}
 # use_p=节点来源顺序（新增/删除机场时改此处 + 上方 url 两处即可，11 个分组自动生效）
 # use 显式指定 provider 顺序（include-all 按下载完成顺序排列，顺序不稳定）
 use_p: &use_p [ap1, ap2, ap3]
@@ -105,9 +109,9 @@ dns:
     - "rule-set:fakeipfilter_domain"
   default-nameserver:
     - https://223.5.5.5/dns-query
-  proxy-server-nameserver:
-    - https://dns.alidns.com/dns-query
-    - https://doh.pub/dns-query
+  # proxy-server-nameserver:
+  #   - https://dns.alidns.com/dns-query
+  #   - https://doh.pub/dns-query
   nameserver:
     - https://dns.alidns.com/dns-query
     - https://doh.pub/dns-query
@@ -127,7 +131,7 @@ dns:
 # 功能组成员列表保持显式可独立修改（各组选择互不影响）；公共参数已锚点化，改参数只改锚点一处：
 #   use_p=节点来源顺序（定义在机场订阅区）  ut=url-test 公共参数（测速地址/间隔/容差）
 #   pz=标准序列表  pz_d=DIRECT 优先列表  mf=手动切换 filter  rj=拒绝组
-ut: &ut {type: url-test, use: *use_p, tolerance: 20, interval: 300, url: https://www.gstatic.com/generate_204}
+ut: &ut {type: url-test, use: *use_p, tolerance: 20, interval: 300, url: http://cp.cloudflare.com/generate_204}
 pz: &pz [🚀 手动切换, 🚀 手动切换2, 🚀 手动切换3, 🇸🇬 狮城节点, 🇭🇰 香港节点, 🇺🇲 美国节点, 🇨🇳 台湾节点, 🇯🇵 日本节点, 🇰🇷 韩国节点, 🌐 其他地区, ♻️ 自动选择, DIRECT]
 pz_d: &pz_d [DIRECT, 🚀 手动切换, 🚀 手动切换2, 🚀 手动切换3, 🇸🇬 狮城节点, 🇭🇰 香港节点, 🇺🇲 美国节点, 🇨🇳 台湾节点, 🇯🇵 日本节点, 🇰🇷 韩国节点, 🌐 其他地区, ♻️ 自动选择]
 mf: &mf "^(?!(?:.*(?::|：|失联|过滤))).*$"
