@@ -1,18 +1,23 @@
 # ref: https://github.com/MetaCubeX/mihomo/blob/Meta/docs/config.yaml
 # ═══ 订阅模板（subconverter 转换用）═══
-# 1. 规则已精简（性能优先）；OpenClash 下 mixed-port/dns.listen/tun 等会被插件覆写（UCI 优先）
+# 使用方法：
+#   1. subconverter 用户：模板无需改动，在 subconverter 中填写 1~3 条机场订阅 URL
+#      （对应下方 ap1/ap2/ap3），转换后即可使用
+#   2. 裸核用户：需自行填写 proxy-providers 的 url（必填），并按需增删 ap* 与 use_p 列表
+#   3. 机场少于 3 个时：删除多余的 ap* 定义，并在 use_p 列表中同步删除对应名字
+# 1. 规则已精简（性能优先）；OpenClash 下 mixed-port/dns.listen/tun 等会被插件覆写，以下值为裸核默认
 # 2. 锚点规则（参考 HenryChiao/MIHOMO_YAMLS 锚点细谈）：
 #    - 锚点必须先定义后引用；& 定义 * 引用，<<: 合并（当前块同名键优先）
 #    - 锚点就近放置：p/use_p=机场订阅区  ut/pz/pz_d/mf/rj=出站策略区  ip/domain/class=规则集区
 #    - 顶层自定义键（p/ut/pz 等）mihomo 忽略，仅用于存放锚点
 # 3. 裸核用户请自行去掉下方控制面板模块的注释
 # 机场订阅（为空的 url 由 subconverter 转换时填充，裸核直接运行会拉取失败）
-# 健康检查/测速 URL（2026-08-18 确认：实测 212ms 最快）
+# 健康检查/测速 URL（可自行替换）
 #   备选（按需替换）：
-#   - http://latency-test.skk.moe/endpoint（204 ✓ 社区常用，实测 364ms 较慢，个人站点单点维护）
-#   - https://www.gstatic.com/generate_204（现用默认，实测 220ms，http 版亦可）
+#   - http://latency-test.skk.moe/endpoint（204 ✓ 社区常用）
+#   - https://www.gstatic.com/generate_204（http 版亦可）
 p: &p {type: http, interval: 86400, proxy: DIRECT, health-check: {enable: true, url: http://cp.cloudflare.com/generate_204, interval: 300, expected-status: 204}}
-# use_p=节点来源顺序（新增/删除机场时改此处 + 上方 url 两处即可，11 个分组自动生效）
+# use_p=节点来源顺序（新增/删除机场时改此处 + 上方 url 两处即可，各组自动生效）
 # use 显式指定 provider 顺序（include-all 按下载完成顺序排列，顺序不稳定）
 use_p: &use_p [ap1, ap2, ap3]
 proxy-providers:
@@ -21,20 +26,20 @@ proxy-providers:
   ap3: { <<: *p, url: ""}
 
 
-# 节点信息：无自定义节点；直连/拒绝直接使用内核内置的 DIRECT/REJECT（2026-08-07 方案 B）
-# （内置名 DIRECT/REJECT/GLOBAL/PASS 为保留名，自定义 direct/reject 节点需改名，此处已无自定义节点）
+# 节点信息：无自定义节点；直连/拒绝直接使用内核内置的 DIRECT/REJECT
+# （DIRECT/REJECT/GLOBAL/PASS 为内置保留名，自定义节点需避开这些名字）
 
 
 # 全局配置
-# OpenClash 下 mixed-port/log-level/dns.listen/tun 等会被插件覆写（UCI 优先），以下值为裸核默认
+# OpenClash 下部分键会被插件覆写，以下值为裸核默认
 mixed-port: 7890
-allow-lan: true
+allow-lan: true # 局域网设备可共享代理（无认证）；如需限制改为 false
 bind-address: "*"
 ipv6: false
 unified-delay: true
 tcp-concurrent: true
 log-level: warning
-# 已移除 global-client-fingerprint（mihomo 新版已废弃该全局键，2026-08-07 审查；节点指纹由 subconverter 写在节点上）
+# 不配置 global-client-fingerprint：该全局键已被 mihomo 废弃（节点指纹由 subconverter 写在节点上）
 keep-alive-idle: 600
 keep-alive-interval: 15
 profile:
@@ -42,7 +47,7 @@ profile:
   store-fake-ip: true
 
 
-# 为防止使用插件朋友遇到面板问题，我注释掉了此模块。
+# 为防止与 OpenClash 面板端口冲突，默认注释此模块（裸核用户自行启用）。
 #external-controller: 0.0.0.0:9090
 #secret: ""
 #external-ui: ui
@@ -50,8 +55,7 @@ profile:
 #external-ui-url: "https://github.com/Zephyruso/zashboard/archive/refs/heads/gh-pages.zip"
 
 
-# 嗅探：fake-ip 下域名已由 DNS 决定，但保留用于纯 IP/非标端口流量的域名识别；HTTP 端口已收窄避免误判噪音
-# B1（2026-08-07）：HTTP [80, 8080-8880]→[80, 8080]（宽范围误判主源，4.5h 1万条噪音）
+# 嗅探：fake-ip 下域名已由 DNS 决定，此处用于纯 IP/非标端口流量的域名识别；HTTP 端口已收窄避免误判
 sniffer:
   enable: true
   override-destination: true
@@ -63,9 +67,8 @@ sniffer:
     TLS:
       ports: [443, 8443]
     QUIC:
-      ports: [443, 8443] # OpenClash B1 覆写为仅 [443]（2026-08-07）
+      ports: [443, 8443] # OpenClash 下被覆写为仅 [443]
   # 强制嗅探域名（流媒体类，避免纯 IP 连接后无法按域名分流）
-  # 2026-08-09：移除 amazonaws（无 Amazon 规则后嗅探无收益；保留流媒体三域）
   force-domain:
     - "+.netflix.com"
     - "+.nflxvideo.net"
@@ -80,12 +83,13 @@ sniffer:
 
 
 # 入站
+# 裸核提示：TUN 透明代理需管理员/root 权限，且应设置 auto-route: true（否则流量不进隧道）；
+# 仅用 mixed-port 手动代理时可将 tun.enable 改为 false（OpenClash 用户无需理会，插件自动管理）
 tun:
   enable: true
-  # system/gvisor/mixed；OpenClash 下被覆写为 system（UCI stack_type=system）
+  # system/gvisor/mixed；OpenClash 下被覆写为 system
   stack: mixed
-  # A2（2026-08-07）：MTU 1500（默认 9000→避免封装后分片开销）
-  # ⚠️ 本行会被 OpenClash yml_change.sh 白名单重建剥离，持久生效依赖覆写脚本 openclash_custom_overwrite.sh 的 A2 块
+  # MTU 1500：默认 9000，调低可避免封装后分片开销（OpenClash 下此键不生效，由插件侧设置）
   #mtu: 1500
   dns-hijack: ["any:53", "tcp://any:53"]
   # 使用 nikki 时开启接口指定（其余情况保持默认三 false）
@@ -99,7 +103,7 @@ tun:
 dns:
   enable: true
   cache-algorithm: arc
-  listen: 0.0.0.0:1053 # OpenClash 下被覆写为 7874（UCI dns_port）
+  listen: 0.0.0.0:1053 # OpenClash 下被覆写为插件设置的端口
   ipv6: false
   respect-rules: true
   enhanced-mode: fake-ip
@@ -139,7 +143,7 @@ mf: &mf "^(?!(?:.*(?::|：|失联|过滤))).*$"
 rj: &rj [REJECT, DIRECT]
 proxy-groups:
   - {name: 🚀 节点选择, type: select, proxies: *pz}
-  # DIRECT 置于首位：mihomo 限制显式 proxies 恒在 use 节点前，无"追加末尾"机制；未手动选择时默认直连
+  # DIRECT 置于首位：未手动选择时默认直连（mihomo 的显式 proxies 恒排在 use 节点之前）
   - {name: 🚀 手动切换, type: select, proxies: [DIRECT], use: *use_p, filter: *mf}
   - {name: 🚀 手动切换2, type: select, proxies: [DIRECT], use: *use_p, filter: *mf}
   - {name: 🚀 手动切换3, type: select, proxies: [DIRECT], use: *use_p, filter: *mf}
@@ -180,17 +184,18 @@ rules:
   - RULE-SET,private_domain,DIRECT
   - RULE-SET,private_ip,DIRECT,no-resolve
 
-  # 自定义强制走代理域名（按需增删）
-  - DOMAIN-SUFFIX,qichiyu.com,🚀 节点选择
-  - DOMAIN-SUFFIX,010210.xyz,🚀 节点选择
+  # 自定义强制走代理域名（按需增删，示例）：
+  # - DOMAIN-SUFFIX,example.com,🚀 节点选择
 
-  # dl.google.com 在 ACL4SSR UnBan 白名单（直连），但该域国内被 GFW 污染 → 前置强制走 📢 谷歌服务（2026-08-09 交叉审查）
+  # dl.google.com 在 UnBan 白名单中为强制直连，但该域国内解析被 GFW 污染 → 前置强制走 📢 谷歌服务
   - DOMAIN,dl.google.com,📢 谷歌服务
+  # googletraveladservices.com 同 dl.google.com：UnBan 白名单（直连）但国内解析被污染 → 前置强制走 📢 谷歌服务
+  - DOMAIN,googletraveladservices.com,📢 谷歌服务
   - RULE-SET,UnBan,🎯 全球直连
 
   - RULE-SET,BanAD,🛑 广告拦截
   - RULE-SET,BanProgramAD,🍃 应用净化
-  # category-ads-all 国际广告商补充（ACL4SSR 两集 77% 域为国内广告联盟，此集补 yandex/taboola/exoclick 等；2026-08-10 交叉比对）
+  # category-ads-all：补充 BanAD/BanProgramAD 未覆盖的国际广告商（yandex/taboola/exoclick 等）
   - RULE-SET,ads-all,🛑 广告拦截
 
   #- RULE-SET,OpenAi,💬 AI
@@ -200,7 +205,7 @@ rules:
   - RULE-SET,GoogleCN,📢 谷歌服务
   - RULE-SET,SteamCN,🎯 全球直连
 
-  # YouTube 前置 google 系之前（geosite google 收录 youtube 全家族，避免主域名被 📢 谷歌服务 接管；2026-08-09）
+  # YouTube 前置 google 系之前（geosite google 收录 youtube 全家族，避免主域名被 📢 谷歌服务 接管）
   - RULE-SET,YouTube,📹 YouTube
 
   - RULE-SET,google_domain,📢 谷歌服务
@@ -213,7 +218,7 @@ rules:
   #- RULE-SET,tiktok,🎵 TikTok
   - RULE-SET,twitter,📱 Twitter
 
-  # GitHub（microsoft 集误收录 github 全家族，前置避免落入 Ⓜ️ 微软服务；2026-08-09）
+  # GitHub（microsoft 集收录了 github 全家族，前置避免落入 Ⓜ️ 微软服务）
   - RULE-SET,github,🚀 节点选择
   - RULE-SET,microsoft@cn,🎯 全球直连
   - RULE-SET,onedrive,Ⓜ️ 微软云盘
@@ -258,7 +263,7 @@ rules:
 # 规则集
 ## type：可选http/file/inline  behavior：可选domain/ipcidr/classical format：可选yaml/text/mrs
 ## 规则集锚点存放键（x-anchor）：x- 前缀为 YAML 扩展键惯例（非 mihomo 配置项，会被忽略）
-## 全链路已验证（2026-08-07）：mihomo -t ✓ + subconverter 转换实测 ✓；顶部另有 p/use_p/ut/pz 等锚点（见文件头说明）
+## 其余锚点（p/use_p/ut/pz 等）定义在顶部对应区块，见文件头说明
 x-anchor:
   ip: &ip {type: http, interval: 86400, behavior: ipcidr, format: mrs}
   domain: &domain {type: http, interval: 86400, behavior: domain, format: mrs}
@@ -268,7 +273,7 @@ rule-providers:
   private_domain: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/private.mrs"}
   private_ip: { <<: *ip, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/private.mrs"}
 
-  # 广告（ACL4SSR 国内广告联盟主力 + MetaCubeX category-ads-all 国际补充，2026-08-10 交叉比对）
+  # 广告（ACL4SSR 国内广告联盟主力 + MetaCubeX category-ads-all 国际补充）
   UnBan: { <<: *class, url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/UnBan.list"}
   BanAD: { <<: *class, url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/BanAD.list"}
   BanProgramAD: { <<: *class, url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/BanProgramAD.list"}
@@ -289,7 +294,7 @@ rule-providers:
   # tiktok: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/tiktok.mrs"}
   twitter: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/x.mrs"}
 
-  # 国内可达（@cn）直连子集（2026-08-09 新增，社区实践：国内 CDN 直连优先，置于全量集规则前）
+  # 国内可达（@cn）直连子集：国内 CDN 优先直连，置于全量集规则前
   github: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/github.mrs"}
   microsoft@cn: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/microsoft@cn.mrs"}
   onedrive: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/onedrive.mrs"}
