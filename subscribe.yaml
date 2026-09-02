@@ -332,4 +332,4 @@ rule-providers:
   cn_ip: { <<: *ip, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/cn.mrs"}
   Download: { <<: *class, url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Download.list"}
   
-  Akamai: { <<: *class, url: "https://raw.githubusercontent.com/LM-Firefly/Rules/master/PROXY/Akamai.list"}
+  Akamai: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/akamai@cn.mrs"}
