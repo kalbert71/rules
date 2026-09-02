@@ -193,6 +193,8 @@ rules:
   - DOMAIN,googletraveladservices.com,📢 谷歌服务
   - RULE-SET,UnBan,🎯 全球直连
 
+  - RULE-SET,Akamai,🎯 全球直连
+
   - RULE-SET,BanAD,🛑 广告拦截
   - RULE-SET,BanProgramAD,🍃 应用净化
   # category-ads-all：补充 BanAD/BanProgramAD 未覆盖的国际广告商（yandex/taboola/exoclick 等）
@@ -329,3 +331,5 @@ rule-providers:
   cn_domain: { <<: *domain, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/cn.mrs"}
   cn_ip: { <<: *ip, url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/cn.mrs"}
   Download: { <<: *class, url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Download.list"}
+  
+  Akamai: { <<: *class, url: "https://raw.githubusercontent.com/LM-Firefly/Rules/master/PROXY/Akamai.list"}
